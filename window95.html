@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>김상완 - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            background: #008080;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .desktop {
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .icon {
+            width: 80px;
+            text-align: center;
+            margin: 20px;
+            cursor: pointer;
+            float: left;
+        }
+
+        .icon-image {
+            width: 50px;
+            height: 50px;
+            background: #c0c0c0;
+            margin: 0 auto 5px;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .icon-label {
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            font-size: 12px;
+        }
+
+        .window {
+            position: absolute;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #000 #000 #dfdfdf;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            min-width: 400px;
+            display: none;
+        }
+
+        .window.active {
+            display: block;
+        }
+
+        .title-bar {
+            background: linear-gradient(to right, #000080, #1084d0);
+            color: #fff;
+            padding: 3px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .title-bar-text {
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .title-bar-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .title-bar-controls button {
+            width: 18px;
+            height: 18px;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .title-bar-controls button:active {
+            border-color: #000 #fff #fff #000;
+        }
+
+        .window-body {
+            padding: 10px;
+            background: #c0c0c0;
+        }
+
+        .menu-bar {
+            background: #c0c0c0;
+            border-bottom: 2px solid #fff;
+            padding: 3px;
+        }
+
+        .menu-item {
+            display: inline-block;
+            padding: 3px 8px;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: #000080;
+            color: #fff;
+        }
+
+        .content-area {
+            background: #fff;
+            border: 2px solid;
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+            padding: 15px;
+            margin: 10px 0;
+            min-height: 300px;
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: #c0c0c0;
+            border-top: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            z-index: 9999;
+        }
+
+        .start-button {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .start-button:active {
+            border-color: #000 #fff #fff #000;
+        }
+
+        .start-logo {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #f00, #ff0);
+        }
+
+        .taskbar-items {
+            display: flex;
+            gap: 2px;
+            margin-left: 10px;
+            flex: 1;
+        }
+
+        .taskbar-item {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .taskbar-item.active {
+            border-color: #000 #fff #fff #000;
+        }
+
+        .taskbar-time {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+            padding: 4px 10px;
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        .button {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            margin: 5px;
+        }
+
+        .button:active {
+            border-color: #000 #fff #fff #000;
+        }
+
+        h1 {
+            color: #000080;
+            font-size: 24px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #000080;
+            padding-bottom: 5px;
+        }
+
+        h2 {
+            color: #000080;
+            font-size: 18px;
+            margin: 15px 0 10px;
+        }
+
+        h3 {
+            color: #000;
+            font-size: 14px;
+            margin: 10px 0 5px;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .project-box {
+            border: 2px solid;
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+            padding: 10px;
+            margin: 10px 0;
+            background: #f0f0f0;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .skill-badge {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            border: 2px solid;
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+            padding: 5px;
+            font-family: inherit;
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .window {
+                min-width: 90%;
+                left: 5% !important;
+                top: 10% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop">
+        <div class="icon" onclick="openWindow('about')">
+            <div class="icon-image">👤</div>
+            <div class="icon-label">About Me</div>
+        </div>
+        <div class="icon" onclick="openWindow('projects')">
+            <div class="icon-image">📁</div>
+            <div class="icon-label">Projects</div>
+        </div>
+        <div class="icon" onclick="openWindow('contact')">
+            <div class="icon-image">📧</div>
+            <div class="icon-label">Contact</div>
+        </div>
+
+        <!-- About Window -->
+        <div id="about-window" class="window" style="left: 100px; top: 100px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'about-window')">
+                <div class="title-bar-text">About Me - 김상완</div>
+                <div class="title-bar-controls">
+                    <button onclick="minimizeWindow('about-window')">_</button>
+                    <button onclick="maximizeWindow('about-window')">□</button>
+                    <button onclick="closeWindow('about-window')">×</button>
+                </div>
+            </div>
+            <div class="menu-bar">
+                <span class="menu-item">File</span>
+                <span class="menu-item">Edit</span>
+                <span class="menu-item">View</span>
+                <span class="menu-item">Help</span>
+            </div>
+            <div class="window-body">
+                <div class="content-area">
+                    <h1>김상완</h1>
+                    <h2>🎮 프로그래머</h2>
+                    
+                    <p>저는 게임 개발과 오디오 프로그래밍에 열정을 가진 프로그래머입니다. 언리얼 엔진을 활용한 몰입감 있는 경험을 만드는 것을 좋아하며, 3D 사운드 기술을 통해 사용자에게 생동감 넘치는 환경을 제공합니다.</p>
+                    
+                    <p>기술과 창의성의 조화를 통해 혁신적인 프로젝트를 구현하는 것을 목표로 합니다.</p>
+
+                    <h2>💻 Skills</h2>
+                    <div class="skill-list">
+                        <div class="skill-badge">🎮 Unreal Engine</div>
+                        <div class="skill-badge">🔊 3D Audio</div>
+                        <div class="skill-badge">💻 C++</div>
+                        <div class="skill-badge">🎵 Sound Design</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Window -->
+        <div id="projects-window" class="window" style="left: 150px; top: 150px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'projects-window')">
+                <div class="title-bar-text">My Projects</div>
+                <div class="title-bar-controls">
+                    <button onclick="minimizeWindow('projects-window')">_</button>
+                    <button onclick="maximizeWindow('projects-window')">□</button>
+                    <button onclick="closeWindow('projects-window')">×</button>
+                </div>
+            </div>
+            <div class="menu-bar">
+                <span class="menu-item">File</span>
+                <span class="menu-item">Edit</span>
+                <span class="menu-item">View</span>
+                <span class="menu-item">Help</span>
+            </div>
+            <div class="window-body">
+                <div class="content-area">
+                    <h1>📁 Projects</h1>
+                    
+                    <div class="project-box">
+                        <h3>🎮 언리얼과 3D 사운드</h3>
+                        <p>언리얼 엔진을 활용한 실시간 3D 사운드 시스템 구현 프로젝트입니다. 공간 오디오 기술로 몰입감 있는 사운드 경험을 제공합니다.</p>
+                        <p><strong>기술:</strong> Unreal Engine, C++, FMOD, Spatial Audio</p>
+                    </div>
+
+                    <div class="project-box">
+                        <h3>💼 프로젝트 2</h3>
+                        <p>준비 중인 새로운 프로젝트입니다.</p>
+                    </div>
+
+                    <div class="project-box">
+                        <h3>🎯 프로젝트 3</h3>
+                        <p>준비 중인 새로운 프로젝트입니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Window -->
+        <div id="contact-window" class="window" style="left: 200px; top: 200px;">
+            <div class="title-bar" onmousedown="startDrag(event, 'contact-window')">
+                <div class="title-bar-text">Contact Me</div>
+                <div class="title-bar-controls">
+                    <button onclick="minimizeWindow('contact-window')">_</button>
+                    <button onclick="maximizeWindow('contact-window')">□</button>
+                    <button onclick="closeWindow('contact-window')">×</button>
+                </div>
+            </div>
+            <div class="menu-bar">
+                <span class="menu-item">File</span>
+                <span class="menu-item">Edit</span>
+                <span class="menu-item">View</span>
+                <span class="menu-item">Help</span>
+            </div>
+            <div class="window-body">
+                <div class="content-area">
+                    <h1>📧 Contact</h1>
+                    
+                    <form onsubmit="handleSubmit(event)">
+                        <label>이름:</label>
+                        <input type="text" placeholder="홍길동">
+                        
+                        <label>이메일:</label>
+                        <input type="email" placeholder="your@email.com">
+                        
+                        <label>메시지:</label>
+                        <textarea rows="6" placeholder="메시지를 입력하세요..."></textarea>
+                        
+                        <button type="submit" class="button">보내기</button>
+                        <button type="reset" class="button">취소</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <div class="start-button" onclick="alert('Start Menu (준비중)')">
+            <div class="start-logo"></div>
+            Start
+        </div>
+        <div class="taskbar-items" id="taskbar-items"></div>
+        <div class="taskbar-time" id="clock"></div>
+    </div>
+
+    <script>
+        let draggedWindow = null;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        function openWindow(windowName) {
+            const window = document.getElementById(windowName + '-window');
+            window.classList.add('active');
+            updateTaskbar();
+            bringToFront(window);
+        }
+
+        function closeWindow(windowId) {
+            document.getElementById(windowId).classList.remove('active');
+            updateTaskbar();
+        }
+
+        function minimizeWindow(windowId) {
+            document.getElementById(windowId).style.display = 'none';
+            updateTaskbar();
+        }
+
+        function maximizeWindow(windowId) {
+            const window = document.getElementById(windowId);
+            if (window.style.width === '90%') {
+                window.style.width = '';
+                window.style.height = '';
+                window.style.left = '';
+                window.style.top = '';
+            } else {
+                window.style.width = '90%';
+                window.style.height = '80%';
+                window.style.left = '5%';
+                window.style.top = '5%';
+            }
+        }
+
+        function startDrag(e, windowId) {
+            draggedWindow = document.getElementById(windowId);
+            const rect = draggedWindow.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            bringToFront(draggedWindow);
+        }
+
+        function drag(e) {
+            if (draggedWindow) {
+                draggedWindow.style.left = (e.clientX - offsetX) + 'px';
+                draggedWindow.style.top = (e.clientY - offsetY) + 'px';
+            }
+        }
+
+        function stopDrag() {
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+            draggedWindow = null;
+        }
+
+        function bringToFront(window) {
+            const windows = document.querySelectorAll('.window');
+            windows.forEach(w => w.style.zIndex = 1);
+            window.style.zIndex = 1000;
+        }
+
+        function updateTaskbar() {
+            const taskbarItems = document.getElementById('taskbar-items');
+            taskbarItems.innerHTML = '';
+            
+            const activeWindows = document.querySelectorAll('.window.active');
+            activeWindows.forEach(window => {
+                const item = document.createElement('div');
+                item.className = 'taskbar-item';
+                item.textContent = window.querySelector('.title-bar-text').textContent;
+                item.onclick = () => {
+                    if (window.style.display === 'none') {
+                        window.style.display = 'block';
+                    }
+                    bringToFront(window);
+                };
+                taskbarItems.appendChild(item);
+            });
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').textContent = hours + ':' + minutes;
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            alert('메시지가 전송되었습니다! (데모용)');
+            e.target.reset();
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // 시작 시 About 창 자동 열기
+        setTimeout(() => openWindow('about'), 500);
+    </script>
+</body>
+</html>
