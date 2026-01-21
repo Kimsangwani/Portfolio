@@ -2,13 +2,19 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="김상완 Portfolio">
     <title>김상완 - Character Sheet</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6rmA7IOB7JmEIFBvcnRmb2xpbyIsInNob3J0X25hbWUiOiLquYDsg4HsmbQiLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwMDAwMDAiLCJ0aGVtZV9jb2xvciI6IiMwMDAwMDAiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3RleHQgeT0nLjllbScgZm9udC1zaXplPSc5MCclM0UlRjAlOUYlOTElQTglRTIlODAlOEQlRjAlOUYlOTIlQkIlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -19,11 +25,41 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
+            touch-action: pan-y;
+            overscroll-behavior: none;
+        }
+
+        .install-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #4a3a5a 0%, #3a2a4a 100%);
+            padding: 15px;
+            text-align: center;
+            z-index: 10000;
+            display: none;
+            border-bottom: 2px solid #9d7aff;
+        }
+
+        .install-banner.show {
+            display: block;
+        }
+
+        .install-banner button {
+            background: #ffd700;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 5px;
+            cursor: pointer;
         }
 
         .character-sheet {
-            width: 500px;
+            width: 100%;
+            max-width: 500px;
             background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
             border: 2px solid #3a3a3a;
             border-radius: 10px;
@@ -54,9 +90,9 @@
 
         .main-container {
             display: grid;
-            grid-template-columns: 80px 1fr 80px;
-            gap: 10px;
-            padding: 15px;
+            grid-template-columns: 70px 1fr 70px;
+            gap: 8px;
+            padding: 12px;
             position: relative;
         }
 
@@ -67,24 +103,23 @@
         }
 
         .equipment-slot {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
             border: 2px solid #4a3a5a;
             border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.8rem;
             cursor: pointer;
             transition: all 0.3s;
             position: relative;
+            touch-action: manipulation;
         }
 
-        .equipment-slot:hover {
-            border-color: #8a7aaa;
-            box-shadow: 0 0 15px rgba(138, 122, 170, 0.5);
-            transform: scale(1.05);
+        .equipment-slot:active {
+            transform: scale(0.95);
         }
 
         .equipment-slot.filled {
@@ -104,10 +139,10 @@
 
         .slot-label {
             position: absolute;
-            bottom: -18px;
+            bottom: -16px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #888;
             white-space: nowrap;
         }
@@ -120,14 +155,14 @@
             background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 70%);
             border: 2px solid #3a3a3a;
             border-radius: 8px;
-            padding: 20px;
-            min-height: 400px;
+            padding: 15px;
+            min-height: 350px;
             position: relative;
         }
 
         .model-display {
-            font-size: 10rem;
-            margin-bottom: 20px;
+            font-size: 8rem;
+            margin-bottom: 15px;
             filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
         }
 
@@ -143,7 +178,7 @@
             display: flex;
             justify-content: space-between;
             padding: 5px 0;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .stat-label {
@@ -155,12 +190,8 @@
             font-weight: bold;
         }
 
-        .stat-value.bonus {
-            color: #00ff00;
-        }
-
         .bottom-panel {
-            padding: 0 15px 15px;
+            padding: 0 12px 12px;
         }
 
         .bags-section {
@@ -178,14 +209,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.3s;
+            touch-action: manipulation;
         }
 
-        .bag-slot:hover {
-            border-color: #8a7aaa;
-            box-shadow: 0 0 10px rgba(138, 122, 170, 0.5);
+        .bag-slot:active {
+            transform: scale(0.95);
         }
 
         .bag-slot.filled {
@@ -204,17 +235,17 @@
             background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
             border: 2px solid #3a3a3a;
             border-radius: 5px;
-            padding: 10px;
+            padding: 10px 5px;
             color: #daa520;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            touch-action: manipulation;
         }
 
-        .tab-button:hover {
-            border-color: #ffd700;
-            background: linear-gradient(180deg, #3a3a2a 0%, #2a2a1a 100%);
+        .tab-button:active {
+            transform: scale(0.95);
         }
 
         .tab-button.active {
@@ -227,9 +258,11 @@
             background: rgba(0,0,0,0.5);
             border: 2px solid #3a3a3a;
             border-radius: 5px;
-            padding: 15px;
-            min-height: 200px;
+            padding: 12px;
+            min-height: 180px;
             display: none;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .content-panel.active {
@@ -240,7 +273,7 @@
             background: rgba(20,20,20,0.8);
             border: 1px solid #4a3a5a;
             border-radius: 5px;
-            padding: 12px;
+            padding: 10px;
             margin-bottom: 10px;
         }
 
@@ -248,12 +281,12 @@
             color: #a335ee;
             font-weight: bold;
             margin-bottom: 5px;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .project-desc {
             color: #ccc;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             line-height: 1.4;
             margin-bottom: 8px;
         }
@@ -269,7 +302,7 @@
             border: 1px solid #4a4a4a;
             padding: 3px 8px;
             border-radius: 3px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #00ff00;
         }
 
@@ -282,7 +315,7 @@
             padding: 12px;
             z-index: 1000;
             min-width: 200px;
-            max-width: 300px;
+            max-width: 280px;
             box-shadow: 0 0 20px rgba(157, 122, 255, 0.5);
             pointer-events: none;
         }
@@ -295,25 +328,26 @@
             color: #a335ee;
             font-weight: bold;
             margin-bottom: 5px;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .tooltip-desc {
             color: #ffd700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             margin-bottom: 8px;
         }
 
         .tooltip-stats {
             color: #00ff00;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             line-height: 1.5;
+            white-space: pre-line;
         }
 
         .about-text {
             color: #ccc;
             line-height: 1.6;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .contact-form {
@@ -330,7 +364,7 @@
 
         .form-group label {
             color: #daa520;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: bold;
         }
 
@@ -342,6 +376,7 @@
             padding: 8px;
             color: #fff;
             font-family: inherit;
+            font-size: 0.9rem;
         }
 
         .form-group input:focus,
@@ -359,35 +394,37 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            touch-action: manipulation;
         }
 
-        .submit-btn:hover {
-            box-shadow: 0 0 15px rgba(157, 122, 255, 0.5);
-            transform: translateY(-2px);
+        .submit-btn:active {
+            transform: scale(0.95);
         }
 
-        @media (max-width: 600px) {
-            .character-sheet {
-                width: 100%;
-            }
-            
-            .main-container {
-                grid-template-columns: 60px 1fr 60px;
-            }
-            
+        @media (max-width: 400px) {
             .equipment-slot {
-                width: 55px;
-                height: 55px;
+                width: 50px;
+                height: 50px;
                 font-size: 1.5rem;
             }
             
             .model-display {
                 font-size: 6rem;
             }
+            
+            .character-model {
+                min-height: 300px;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="install-banner" class="install-banner">
+        <div style="margin-bottom: 10px; color: #ffd700;">📱 앱으로 설치하시겠어요?</div>
+        <button onclick="installApp()">설치하기</button>
+        <button onclick="closeInstallBanner()" style="background: #666; color: #fff;">나중에</button>
+    </div>
+
     <div class="character-sheet">
         <div class="header">
             <div class="character-name">김상완</div>
@@ -397,23 +434,23 @@
         <div class="main-container">
             <!-- Left Equipment -->
             <div class="equipment-column">
-                <div class="equipment-slot legendary" onmouseover="showTooltip(event, '언리얼 엔진의 왕관', 'Legendary', '+99 게임 개발 능력\n+50 3D 렌더링\n사용 시: 몰입감 있는 게임 생성')" onmouseout="hideTooltip()">
+                <div class="equipment-slot legendary" ontouchstart="showTooltipMobile(event, '언리얼 엔진의 왕관', 'Legendary', '+99 게임 개발 능력\n+50 3D 렌더링\n사용 시: 몰입감 있는 게임 생성')">
                     👑
                     <div class="slot-label">머리</div>
                 </div>
-                <div class="equipment-slot epic" onmouseover="showTooltip(event, '소음 제거 헤드셋', 'Epic', '+40 집중력\n+30 오디오 품질\n사용 시: 완벽한 몰입 환경')" onmouseout="hideTooltip()">
+                <div class="equipment-slot epic" ontouchstart="showTooltipMobile(event, '소음 제거 헤드셋', 'Epic', '+40 집중력\n+30 오디오 품질\n사용 시: 완벽한 몰입 환경')">
                     🎧
                     <div class="slot-label">목걸이</div>
                 </div>
-                <div class="equipment-slot filled" onmouseover="showTooltip(event, '코딩 장갑', 'Rare', '+25 타이핑 속도\n+15 버그 수정 능력')" onmouseout="hideTooltip()">
+                <div class="equipment-slot filled" ontouchstart="showTooltipMobile(event, '코딩 장갑', 'Rare', '+25 타이핑 속도\n+15 버그 수정 능력')">
                     🧤
                     <div class="slot-label">어깨</div>
                 </div>
-                <div class="equipment-slot filled" onmouseover="showTooltip(event, '개발자의 조끼', 'Rare', '+30 생산성\n+20 인내심')" onmouseout="hideTooltip()">
+                <div class="equipment-slot filled" ontouchstart="showTooltipMobile(event, '개발자의 조끼', 'Rare', '+30 생산성\n+20 인내심')">
                     👔
                     <div class="slot-label">등</div>
                 </div>
-                <div class="equipment-slot filled" onmouseover="showTooltip(event, '편안한 의자', 'Uncommon', '+15 건강\n+10 자세')" onmouseout="hideTooltip()">
+                <div class="equipment-slot filled" ontouchstart="showTooltipMobile(event, '편안한 의자', 'Uncommon', '+15 건강\n+10 자세')">
                     💺
                     <div class="slot-label">가슴</div>
                 </div>
@@ -441,30 +478,30 @@
                     </div>
                     <div class="stat-row">
                         <span class="stat-label">커피 중독</span>
-                        <span class="stat-value bonus">+∞</span>
+                        <span class="stat-value">+∞</span>
                     </div>
                 </div>
             </div>
 
             <!-- Right Equipment -->
             <div class="equipment-column">
-                <div class="equipment-slot epic" onmouseover="showTooltip(event, 'C++ 마스터 반지', 'Epic', '+50 성능 최적화\n+35 메모리 관리\n특수: 메모리 누수 방지')" onmouseout="hideTooltip()">
+                <div class="equipment-slot epic" ontouchstart="showTooltipMobile(event, 'C++ 마스터 반지', 'Epic', '+50 성능 최적화\n+35 메모리 관리\n특수: 메모리 누수 방지')">
                     💍
                     <div class="slot-label">손</div>
                 </div>
-                <div class="equipment-slot filled" onmouseover="showTooltip(event, '기계식 키보드', 'Rare', '+30 타이핑 속도\n+20 만족감')" onmouseout="hideTooltip()">
+                <div class="equipment-slot filled" ontouchstart="showTooltipMobile(event, '기계식 키보드', 'Rare', '+30 타이핑 속도\n+20 만족감')">
                     ⌨️
                     <div class="slot-label">허리</div>
                 </div>
-                <div class="equipment-slot filled" onmouseover="showTooltip(event, '편안한 바지', 'Uncommon', '+10 편안함\n+5 이동 속도')" onmouseout="hideTooltip()">
+                <div class="equipment-slot filled" ontouchstart="showTooltipMobile(event, '편안한 바지', 'Uncommon', '+10 편안함\n+5 이동 속도')">
                     👖
                     <div class="slot-label">다리</div>
                 </div>
-                <div class="equipment-slot filled" onmouseover="showTooltip(event, '슬리퍼', 'Common', '+5 편안함')" onmouseout="hideTooltip()">
+                <div class="equipment-slot filled" ontouchstart="showTooltipMobile(event, '슬리퍼', 'Common', '+5 편안함')">
                     🥿
                     <div class="slot-label">발</div>
                 </div>
-                <div class="equipment-slot legendary" onmouseover="showTooltip(event, '듀얼 모니터', 'Legendary', '+99 멀티태스킹\n+80 생산성\n사용 시: 작업 효율 2배 증가')" onmouseout="hideTooltip()">
+                <div class="equipment-slot legendary" ontouchstart="showTooltipMobile(event, '듀얼 모니터', 'Legendary', '+99 멀티태스킹\n+80 생산성\n사용 시: 작업 효율 2배 증가')">
                     🖥️
                     <div class="slot-label">장신구</div>
                 </div>
@@ -473,11 +510,11 @@
 
         <div class="bottom-panel">
             <div class="bags-section">
-                <div class="bag-slot filled" onmouseover="showTooltip(event, 'Unreal Engine', '', '게임 개발의 핵심 도구')" onmouseout="hideTooltip()">🎮</div>
-                <div class="bag-slot filled" onmouseover="showTooltip(event, '3D Audio', '', '공간 음향 기술')" onmouseout="hideTooltip()">🔊</div>
-                <div class="bag-slot filled" onmouseover="showTooltip(event, 'C++', '', '고성능 프로그래밍')" onmouseout="hideTooltip()">💻</div>
-                <div class="bag-slot filled" onmouseover="showTooltip(event, 'Sound Design', '', '오디오 디자인')" onmouseout="hideTooltip()">🎵</div>
-                <div class="bag-slot filled" onmouseover="showTooltip(event, 'FMOD', '', '오디오 미들웨어')" onmouseout="hideTooltip()">🎚️</div>
+                <div class="bag-slot filled" ontouchstart="showTooltipMobile(event, 'Unreal Engine', '', '게임 개발의 핵심 도구')">🎮</div>
+                <div class="bag-slot filled" ontouchstart="showTooltipMobile(event, '3D Audio', '', '공간 음향 기술')">🔊</div>
+                <div class="bag-slot filled" ontouchstart="showTooltipMobile(event, 'C++', '', '고성능 프로그래밍')">💻</div>
+                <div class="bag-slot filled" ontouchstart="showTooltipMobile(event, 'Sound Design', '', '오디오 디자인')">🎵</div>
+                <div class="bag-slot filled" ontouchstart="showTooltipMobile(event, 'FMOD', '', '오디오 미들웨어')">🎚️</div>
             </div>
 
             <div class="tab-buttons">
@@ -561,20 +598,66 @@
     </div>
 
     <script>
-        function showTooltip(event, title, rarity, stats) {
+        let deferredPrompt;
+        let tooltipTimeout;
+
+        // PWA 설치 이벤트
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-banner').classList.add('show');
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('앱 설치됨');
+                    }
+                    deferredPrompt = null;
+                    closeInstallBanner();
+                });
+            } else {
+                // iOS 안내
+                if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                    alert('Safari에서: 공유 버튼 → "홈 화면에 추가"를 눌러주세요!');
+                } else {
+                    alert('브라우저 메뉴에서 "홈 화면에 추가"를 선택해주세요!');
+                }
+            }
+        }
+
+        function closeInstallBanner() {
+            document.getElementById('install-banner').classList.remove('show');
+        }
+
+        // 모바일 터치 툴팁
+        function showTooltipMobile(event, title, rarity, stats) {
+            event.preventDefault();
             const tooltip = document.getElementById('tooltip');
             document.getElementById('tooltip-title').textContent = title;
             document.getElementById('tooltip-desc').textContent = rarity;
             document.getElementById('tooltip-stats').textContent = stats || '';
             
-            tooltip.style.left = (event.pageX + 15) + 'px';
-            tooltip.style.top = (event.pageY + 15) + 'px';
+            const touch = event.touches[0];
+            tooltip.style.left = (touch.pageX + 15) + 'px';
+            tooltip.style.top = (touch.pageY - 80) + 'px';
             tooltip.classList.add('show');
+
+            clearTimeout(tooltipTimeout);
+            tooltipTimeout = setTimeout(() => {
+                tooltip.classList.remove('show');
+            }, 2000);
         }
 
-        function hideTooltip() {
-            document.getElementById('tooltip').classList.remove('show');
-        }
+        // 터치 종료시 툴팁 숨김
+        document.addEventListener('touchend', () => {
+            clearTimeout(tooltipTimeout);
+            tooltipTimeout = setTimeout(() => {
+                document.getElementById('tooltip').classList.remove('show');
+            }, 1500);
+        });
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
@@ -589,6 +672,37 @@
             alert('⚔️ 메시지가 전송되었습니다!');
             event.target.reset();
         }
-    </script>
-</body>
-</html>
+
+        // Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(
+                        caches.open('portfolio-v1').then((cache) => {
+                            return cache.addAll(['/']);
+                        })
+                    );
+                });
+
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(
+                        caches.match(e.request).then((response) => {
+                            return response || fetch(e.request);
+                        })
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl).then(() => {
+                console.log('Service Worker 등록 완료');
+            });
+        }
+
+        // 앱 설치 확인
+        window.addEventListener('appinstalled', () => {
+            console.log('앱이 홈 화면에 설치되었습니다!');
+            closeInstallBanner();
+        
