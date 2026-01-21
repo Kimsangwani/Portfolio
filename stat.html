@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>김상완 - Character Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .character-sheet {
+            width: 500px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 2px solid #3a3a3a;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            border-bottom: 1px solid #3a3a3a;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .character-name {
+            font-size: 1.5rem;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .character-info {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 80px 1fr 80px;
+            gap: 10px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .equipment-column {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .equipment-slot {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 2px solid #4a3a5a;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .equipment-slot:hover {
+            border-color: #8a7aaa;
+            box-shadow: 0 0 15px rgba(138, 122, 170, 0.5);
+            transform: scale(1.05);
+        }
+
+        .equipment-slot.filled {
+            border-color: #9d7aff;
+            box-shadow: 0 0 10px rgba(157, 122, 255, 0.3);
+        }
+
+        .equipment-slot.legendary {
+            border-color: #ff8000;
+            box-shadow: 0 0 15px rgba(255, 128, 0, 0.5);
+        }
+
+        .equipment-slot.epic {
+            border-color: #a335ee;
+            box-shadow: 0 0 15px rgba(163, 53, 238, 0.5);
+        }
+
+        .slot-label {
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .character-model {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 70%);
+            border: 2px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .model-display {
+            font-size: 10rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
+        }
+
+        .stats-panel {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #3a3a3a;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.85rem;
+        }
+
+        .stat-label {
+            color: #ffd700;
+        }
+
+        .stat-value {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .stat-value.bonus {
+            color: #00ff00;
+        }
+
+        .bottom-panel {
+            padding: 0 15px 15px;
+        }
+
+        .bags-section {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .bag-slot {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 2px solid #4a3a5a;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bag-slot:hover {
+            border-color: #8a7aaa;
+            box-shadow: 0 0 10px rgba(138, 122, 170, 0.5);
+        }
+
+        .bag-slot.filled {
+            border-color: #9d7aff;
+            box-shadow: 0 0 8px rgba(157, 122, 255, 0.3);
+        }
+
+        .tab-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .tab-button {
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 2px solid #3a3a3a;
+            border-radius: 5px;
+            padding: 10px;
+            color: #daa520;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .tab-button:hover {
+            border-color: #ffd700;
+            background: linear-gradient(180deg, #3a3a2a 0%, #2a2a1a 100%);
+        }
+
+        .tab-button.active {
+            border-color: #ffd700;
+            background: linear-gradient(180deg, #4a4a2a 0%, #3a3a1a 100%);
+            color: #ffd700;
+        }
+
+        .content-panel {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #3a3a3a;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 200px;
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        .project-item {
+            background: rgba(20,20,20,0.8);
+            border: 1px solid #4a3a5a;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .project-title {
+            color: #a335ee;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .project-desc {
+            color: #ccc;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag {
+            background: #2a2a2a;
+            border: 1px solid #4a4a4a;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            color: #00ff00;
+        }
+
+        .tooltip {
+            display: none;
+            position: fixed;
+            background: linear-gradient(135deg, rgba(10,10,10,0.98) 0%, rgba(30,20,30,0.98) 100%);
+            border: 2px solid #9d7aff;
+            border-radius: 8px;
+            padding: 12px;
+            z-index: 1000;
+            min-width: 200px;
+            max-width: 300px;
+            box-shadow: 0 0 20px rgba(157, 122, 255, 0.5);
+            pointer-events: none;
+        }
+
+        .tooltip.show {
+            display: block;
+        }
+
+        .tooltip-title {
+            color: #a335ee;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .tooltip-desc {
+            color: #ffd700;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-stats {
+            color: #00ff00;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .about-text {
+            color: #ccc;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            color: #daa520;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #3a3a3a;
+            border-radius: 5px;
+            padding: 8px;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #9d7aff;
+        }
+
+        .submit-btn {
+            background: linear-gradient(180deg, #4a3a5a 0%, #3a2a4a 100%);
+            border: 2px solid #9d7aff;
+            border-radius: 5px;
+            padding: 10px;
+            color: #ffd700;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            box-shadow: 0 0 15px rgba(157, 122, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .character-sheet {
+                width: 100%;
+            }
+            
+            .main-container {
+                grid-template-columns: 60px 1fr 60px;
+            }
+            
+            .equipment-slot {
+                width: 55px;
+                height: 55px;
+                font-size: 1.5rem;
+            }
+            
+            .model-display {
+                font-size: 6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="character-sheet">
+        <div class="header">
+            <div class="character-name">김상완</div>
+            <div class="character-info">레벨 99 프로그래머 | Alliance</div>
+        </div>
+
+        <div class="main-container">
+            <!-- Left Equipment -->
+            <div class="equipment-column">
+                <div class="equipment-slot legendary" onmouseover="showTooltip(event, '언리얼 엔진의 왕관', 'Legendary', '+99 게임 개발 능력\n+50 3D 렌더링\n사용 시: 몰입감 있는 게임 생성')" onmouseout="hideTooltip()">
+                    👑
+                    <div class="slot-label">머리</div>
+                </div>
+                <div class="equipment-slot epic" onmouseover="showTooltip(event, '소음 제거 헤드셋', 'Epic', '+40 집중력\n+30 오디오 품질\n사용 시: 완벽한 몰입 환경')" onmouseout="hideTooltip()">
+                    🎧
+                    <div class="slot-label">목걸이</div>
+                </div>
+                <div class="equipment-slot filled" onmouseover="showTooltip(event, '코딩 장갑', 'Rare', '+25 타이핑 속도\n+15 버그 수정 능력')" onmouseout="hideTooltip()">
+                    🧤
+                    <div class="slot-label">어깨</div>
+                </div>
+                <div class="equipment-slot filled" onmouseover="showTooltip(event, '개발자의 조끼', 'Rare', '+30 생산성\n+20 인내심')" onmouseout="hideTooltip()">
+                    👔
+                    <div class="slot-label">등</div>
+                </div>
+                <div class="equipment-slot filled" onmouseover="showTooltip(event, '편안한 의자', 'Uncommon', '+15 건강\n+10 자세')" onmouseout="hideTooltip()">
+                    💺
+                    <div class="slot-label">가슴</div>
+                </div>
+            </div>
+
+            <!-- Center Model -->
+            <div class="character-model">
+                <div class="model-display">👨‍💻</div>
+                <div class="stats-panel">
+                    <div class="stat-row">
+                        <span class="stat-label">코딩 파워</span>
+                        <span class="stat-value">+9999</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">문제 해결</span>
+                        <span class="stat-value">+8888</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">창의성</span>
+                        <span class="stat-value">+7777</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">팀워크</span>
+                        <span class="stat-value">+9000</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">커피 중독</span>
+                        <span class="stat-value bonus">+∞</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Equipment -->
+            <div class="equipment-column">
+                <div class="equipment-slot epic" onmouseover="showTooltip(event, 'C++ 마스터 반지', 'Epic', '+50 성능 최적화\n+35 메모리 관리\n특수: 메모리 누수 방지')" onmouseout="hideTooltip()">
+                    💍
+                    <div class="slot-label">손</div>
+                </div>
+                <div class="equipment-slot filled" onmouseover="showTooltip(event, '기계식 키보드', 'Rare', '+30 타이핑 속도\n+20 만족감')" onmouseout="hideTooltip()">
+                    ⌨️
+                    <div class="slot-label">허리</div>
+                </div>
+                <div class="equipment-slot filled" onmouseover="showTooltip(event, '편안한 바지', 'Uncommon', '+10 편안함\n+5 이동 속도')" onmouseout="hideTooltip()">
+                    👖
+                    <div class="slot-label">다리</div>
+                </div>
+                <div class="equipment-slot filled" onmouseover="showTooltip(event, '슬리퍼', 'Common', '+5 편안함')" onmouseout="hideTooltip()">
+                    🥿
+                    <div class="slot-label">발</div>
+                </div>
+                <div class="equipment-slot legendary" onmouseover="showTooltip(event, '듀얼 모니터', 'Legendary', '+99 멀티태스킹\n+80 생산성\n사용 시: 작업 효율 2배 증가')" onmouseout="hideTooltip()">
+                    🖥️
+                    <div class="slot-label">장신구</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-panel">
+            <div class="bags-section">
+                <div class="bag-slot filled" onmouseover="showTooltip(event, 'Unreal Engine', '', '게임 개발의 핵심 도구')" onmouseout="hideTooltip()">🎮</div>
+                <div class="bag-slot filled" onmouseover="showTooltip(event, '3D Audio', '', '공간 음향 기술')" onmouseout="hideTooltip()">🔊</div>
+                <div class="bag-slot filled" onmouseover="showTooltip(event, 'C++', '', '고성능 프로그래밍')" onmouseout="hideTooltip()">💻</div>
+                <div class="bag-slot filled" onmouseover="showTooltip(event, 'Sound Design', '', '오디오 디자인')" onmouseout="hideTooltip()">🎵</div>
+                <div class="bag-slot filled" onmouseover="showTooltip(event, 'FMOD', '', '오디오 미들웨어')" onmouseout="hideTooltip()">🎚️</div>
+            </div>
+
+            <div class="tab-buttons">
+                <div class="tab-button active" onclick="switchTab('projects')">프로젝트</div>
+                <div class="tab-button" onclick="switchTab('about')">소개</div>
+                <div class="tab-button" onclick="switchTab('skills')">스킬</div>
+                <div class="tab-button" onclick="switchTab('contact')">연락</div>
+            </div>
+
+            <div id="projects-panel" class="content-panel active">
+                <div class="project-item">
+                    <div class="project-title">🎮 언리얼과 3D 사운드</div>
+                    <div class="project-desc">언리얼 엔진을 활용한 실시간 3D 사운드 시스템 구현 프로젝트입니다. 공간 오디오 기술로 몰입감 있는 사운드 경험을 제공합니다.</div>
+                    <div class="project-tags">
+                        <span class="tag">Unreal Engine</span>
+                        <span class="tag">C++</span>
+                        <span class="tag">3D Audio</span>
+                        <span class="tag">FMOD</span>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">💼 프로젝트 2</div>
+                    <div class="project-desc">준비 중인 새로운 프로젝트입니다.</div>
+                    <div class="project-tags">
+                        <span class="tag">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="about-panel" class="content-panel">
+                <div class="about-text">
+                    <p style="margin-bottom: 10px;">저는 게임 개발과 오디오 프로그래밍에 열정을 가진 프로그래머입니다.</p>
+                    <p style="margin-bottom: 10px;">언리얼 엔진을 활용한 몰입감 있는 경험을 만드는 것을 좋아하며, 3D 사운드 기술을 통해 사용자에게 생동감 넘치는 환경을 제공합니다.</p>
+                    <p>기술과 창의성의 조화를 통해 혁신적인 프로젝트를 구현하는 것을 목표로 합니다.</p>
+                </div>
+            </div>
+
+            <div id="skills-panel" class="content-panel">
+                <div class="stat-row" style="padding: 8px; background: rgba(0,0,0,0.3); margin-bottom: 5px; border-radius: 3px;">
+                    <span class="stat-label">🎮 Unreal Engine</span>
+                    <span class="stat-value">Legendary</span>
+                </div>
+                <div class="stat-row" style="padding: 8px; background: rgba(0,0,0,0.3); margin-bottom: 5px; border-radius: 3px;">
+                    <span class="stat-label">🔊 3D Audio</span>
+                    <span class="stat-value">Epic</span>
+                </div>
+                <div class="stat-row" style="padding: 8px; background: rgba(0,0,0,0.3); margin-bottom: 5px; border-radius: 3px;">
+                    <span class="stat-label">💻 C++</span>
+                    <span class="stat-value">Epic</span>
+                </div>
+                <div class="stat-row" style="padding: 8px; background: rgba(0,0,0,0.3); margin-bottom: 5px; border-radius: 3px;">
+                    <span class="stat-label">🎵 Sound Design</span>
+                    <span class="stat-value">Rare</span>
+                </div>
+            </div>
+
+            <div id="contact-panel" class="content-panel">
+                <form class="contact-form" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label>이름</label>
+                        <input type="text" placeholder="홍길동" required>
+                    </div>
+                    <div class="form-group">
+                        <label>이메일</label>
+                        <input type="email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>메시지</label>
+                        <textarea rows="4" placeholder="메시지를 입력하세요..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">🚀 메시지 보내기</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip" class="tooltip">
+        <div class="tooltip-title" id="tooltip-title"></div>
+        <div class="tooltip-desc" id="tooltip-desc"></div>
+        <div class="tooltip-stats" id="tooltip-stats"></div>
+    </div>
+
+    <script>
+        function showTooltip(event, title, rarity, stats) {
+            const tooltip = document.getElementById('tooltip');
+            document.getElementById('tooltip-title').textContent = title;
+            document.getElementById('tooltip-desc').textContent = rarity;
+            document.getElementById('tooltip-stats').textContent = stats || '';
+            
+            tooltip.style.left = (event.pageX + 15) + 'px';
+            tooltip.style.top = (event.pageY + 15) + 'px';
+            tooltip.classList.add('show');
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('show');
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-panel').classList.add('active');
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            alert('⚔️ 메시지가 전송되었습니다!');
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>
